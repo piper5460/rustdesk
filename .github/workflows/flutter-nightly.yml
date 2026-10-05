@@ -1,6 +1,10 @@
 name: Flutter Nightly Build
 
 on:
+  workflow_dispatch: # 允许手动点击按钮触发
+  push:
+    branches:
+      - master
   schedule:
     # schedule build every night
     - cron: "0 0 * * *"
