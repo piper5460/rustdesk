@@ -684,55 +684,6 @@ class _RemoteToolbarState extends State<RemoteToolbar> {
   @override
   Widget build(BuildContext context) {
     return const SizedBox.shrink();
-      }
-      // If toolbar is hidden, return empty widget
-      if (hide.value) {
-        return const SizedBox.shrink();
-      }
-      final edge = _edge.value;
-      final isHorizontal = _isHorizontalEdge(edge);
-
-      // Measure the live toolbar after every layout so the preview ghost can
-      // match its actual footprint (collapsed handle vs expanded toolbar).
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_dragging.isTrue) return;
-        final ro = _toolbarKey.currentContext?.findRenderObject();
-        if (ro is RenderBox && ro.hasSize) {
-          final s = ro.size;
-          if (_toolbarSize.value != s) _toolbarSize.value = s;
-        }
-      });
-
-      final toolbar = Align(
-        alignment: _alignmentForEdge(edge, _fraction.value),
-        child: KeyedSubtree(
-          key: _toolbarKey,
-          child: collapse.isFalse
-              ? _buildToolbar(context, edge, isHorizontal)
-              : _buildDraggableCollapse(context, edge, isHorizontal),
-        ),
-      );
-
-      // Always return the Stack — even when not dragging — so the toolbar's
-      // position in the Element tree stays stable. Wrapping/unwrapping it
-      // mid-drag was killing the Draggable's gesture state.
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          IgnorePointer(
-            child: Obx(() {
-              final pe = _previewEdge.value;
-              final pf = _previewFraction.value;
-              if (!_dragging.isTrue || pe == null || pf == null) {
-                return const SizedBox.shrink();
-              }
-              return _buildDragPreview(context, pe, pf, _toolbarSize.value);
-            }),
-          ),
-          toolbar,
-        ],
-      );
-    });
   }
 
   Widget _buildDragPreview(BuildContext context, _ToolbarEdge edge,
